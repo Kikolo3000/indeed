@@ -1,0 +1,14 @@
+# wheel files and directories
+#MANIFEST.in
+CHANGES
+/dist
+/build
+/mpwp.egg-info/
+**mpwp_apikeys.yaml
+
+# python files/directories
+**/__pycache__
+*.py[co]
+*.csv
+**/mpwp-data
+/extra
