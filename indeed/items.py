@@ -13,8 +13,8 @@ class IndeedItem(scrapy.Item):
     # name = scrapy.Field()
     title       = scrapy.Field(serializer=str)
     company     = scrapy.Field(serializer=str)
-    place       = scrapy.Field(serializer=str)
+    #place       = scrapy.Field(serializer=str)
     description = scrapy.Field(serializer=str)
-    salary      = scrapy.Field(serializer=str)
+    #salary      = scrapy.Field(serializer=str)
  
     pass

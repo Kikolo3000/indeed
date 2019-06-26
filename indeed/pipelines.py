@@ -28,7 +28,7 @@ class IndeedPipeline(object):
         file = open('%s_items.csv' % spider.name, 'w+b')
         self.files[spider] = file
         self.exporter = CsvItemExporter(file) 
-        self.exporter.fields_to_export = ['title', 'company', 'place', 'description', 'salary']
+        self.exporter.fields_to_export = ['title', 'summary']
         self.exporter.start_exporting()
 
     def spider_closed(self, spider):
