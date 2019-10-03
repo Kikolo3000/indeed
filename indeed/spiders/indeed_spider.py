@@ -11,7 +11,7 @@ class IndeedSpider(CrawlSpider):
 
     name                    =   "indeed2"
     allowed_domains         =   ["indeed.com", "indeed.co.uk", "de.indeed.com", "indeed.com.br", "indeed.es", "indeex.hk"]
-    handle_httpstatus_list  =   [301, 302]
+    #handle_httpstatus_list  =   [301, 302]
     item_count = 0
     start_urls = [
         "https://www.indeed.com/jobs?q=e-learning"
