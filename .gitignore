@@ -12,3 +12,7 @@ CHANGES
 *.csv
 **/mpwp-data
 /extra
+/data
+**.jsonlines
+**.log
+**.csv
