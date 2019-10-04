@@ -16,19 +16,19 @@ SPIDER_MODULES = ['indeed.spiders']
 NEWSPIDER_MODULE = 'indeed.spiders'
 
 #CSV IMPORTACION
-ITEM_PIPELINES = {'indeed.pipelines.IndeedPipeline': 500,
-					'indeed.pipelines.IndeedImagenesPipeline': 600, }
+#ITEM_PIPELINES = {'indeed.pipelines.IndeedPipeline': 500,
+#					'indeed.pipelines.IndeedImagenesPipeline': 600, }
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'mercado (+http://www.yourdomain.com)'
+USER_AGENT = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36'
 
 # Obey robots.txt rules
 #ROBOTSTXT_OBEY = True
 ROBOTSTXT_OBEY=False
 
 #Imagenes
-IMAGES_STORE = '/home/kike/Documentos/virtualEnvs/spySharePLM/indeed/indeed/imagenes'
-DOWNLOAD_DELAY = 2
+#IMAGES_STORE = '~/Desktop/indeed-images'
+#DOWNLOAD_DELAY = 1
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
