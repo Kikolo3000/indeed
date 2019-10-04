@@ -1,44 +1,66 @@
-# import sys
-# reload(sys)
-# sys.setdefaultencoding('utf8')
-
-import scrapy
 from scrapy.spiders import CrawlSpider, Rule
 from scrapy.linkextractors import LinkExtractor
 from scrapy.exceptions import CloseSpider
-from indeed.items import *
 
-import  json
-import  unicodedata
-import  os
+import scrapy
+from indeed.items import IndeedItem
 
-#class IndeedSpider(scrapy.Spider):
+from bs4 import BeautifulSoup
+
 class IndeedSpider(CrawlSpider):
-	name = 'indeed'
-	item_count = 0
-	allowed_domain = ['https://www.indeed.es/', 'https://www.indeed.com/']
-	start_urls = ['https://www.indeed.com/jobs?q=e-learning']
 
-	rules = {
-		# Para cada item
-		Rule(LinkExtractor(allow = (), restrict_xpaths = ('//div[contains(@class, "pagination")]/a[last()]//a'))),
-		Rule(LinkExtractor(allow =(), restrict_xpaths = ('//div[contains(@class, "jobsearch-SerpJobCard")]//*[contains(@class, "title")]//*[contains(@class, "title")]')), callback = 'parse_item', follow = False)
-    }
-	def parse_item(self, response):        
-		item = IndeedItem()
-    #item = ItemLoader(item=IndeedItem(), response=response)
-		#info de producto
-		print ('\n\n element number %i in process \n \n' % self.item_count)
-		item['title'] = response.xpath('//h3/text()').extract_first()
-		item['company'] = response.xpath('//div[contains(@class,"jobsearch-JobInfoHeader")]//div[1]//div[1]/text()').extract()
-		item['company'] = response.xpath('//div[contains(@class,"jobsearch-JobInfoHeader-subtitle")]//div[contains(@class,"icl-u-lg-mr--sm")][1]//text()').extract()
-		item['place'] = response.xpath('//div[contains(@class,"jobsearch-JobInfoHeader")]//div[1]//div[last()]/text()').extract()
-		item['salary'] = response.xpath('//div[contains(@class,"jobsearch-JobMetadataHeader-item")]//text()').extract()
-		item['description'] = response.xpath('//div[contains(@class,"jobDescriptionText")]//text()').extract()
-		self.item_count += 1
-		if self.item_count > 20:
-			raise CloseSpider('item_exceeded')
-		print ('\n element number %i done \n' % self.item_count)
-		yield item
+    name                    =   "indeed"
+    allowed_domains         =   ["indeed.com"]
+    #handle_httpstatus_list  =   [301, 302]
+    item_count = 0
+    #start_urls = [
+    #    "https://www.indeed.com/jobs?q=e-learning"
+    #]
+
+    def __init__(self, *a, **kw) :
+      self.PAGES  = None
+      super(IndeedSpider, self).__init__(*a, **kw)
+    
+    def start_requests(self) :
+      if not self.PAGES :
+        raise CloseSpider("ERROR: <PAGES> is not defined [0-]")
+      else :
+        self.PAGES = int(self.PAGES)
+
+      for page in range(0,self.PAGES) :
+        URL="https://www.indeed.com/jobs?q=e-learning&start=%s"
+        yield scrapy.Request(url = URL % str(page*10), callback = self.parse_urls )
+
+    def parse_urls(self, response ) :
+      JKs = response.xpath('//div[contains(@class,"jobsearch-SerpJobCard")]/@data-jk').extract()
+      URL = "https://www.indeed.com/viewjob?jk=%s&from=web&vjs=3"
+      for JK in JKs :
+        yield scrapy.Request(url = URL % JK, callback = self.parse_indeed_results ) 
+
+    def parse_indeed_results(self, response):
+        self.log("PAPA")
+        #LIMIT
+        """
+        self.item_count += 1
+        if self.item_count > 10:
+            raise CloseSpider('item_exceeded')
+        """
+
+        # To extract elements, add them here
+        item  = IndeedItem()
+       
+        #TITLE
+        title = response.xpath('//h3[contains(@class,"JobInfoHeader")]/text()').extract_first()
+        item['title'] = title.strip()
         
+        #COMPANY
+        company_data = response.xpath('//div[contains(@class,"InlineCompanyRating")]//text()').extract()
+        item['company'] = company_data[0].strip()
+        item['address'] = company_data[-1].strip()
+        
+        #DESCRIPTION
+        description = response.xpath('//div[contains(@id,"jobDescriptionText")]//text()').extract()
+        description = ' '.join(description)
+        item['description'] = description.replace("\n","").encode('utf-8')
 
+        yield item
